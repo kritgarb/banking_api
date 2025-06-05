@@ -16,7 +16,7 @@ class TransferenciaAgendadaJob < ApplicationJob
     if service.executar
       transferencia.update!(executada: true)
       
-    # NotificacaoService.new(transferencia.conta_bancaria.user).transferencia_executada(transferencia)
+      NotificacaoService.new(transferencia.conta_bancaria.user).transferencia_executada(transferencia)
     else
       Rails.logger.error "Erro ao executar transferência agendada #{transferencia.id}: #{service.errors.join(', ')}"
       
