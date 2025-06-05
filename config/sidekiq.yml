@@ -1,0 +1,14 @@
+:concurrency: 5
+:pidfile: tmp/pids/sidekiq.pid
+:logfile: log/sidekiq.log
+:queues:
+  - [critical, 6]
+  - [default, 4]
+  - [transferencias, 3]
+  - [scheduled, 2]
+  - [low, 1]
+
+:schedule:
+  verificar_transferencias_agendadas:
+    every: 1m
+    class: VerificarTransferenciasAgendadasJob

@@ -1,0 +1,110 @@
+# See https://help.github.com/articles/ignoring-files for more about ignoring files.
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Ignore uploaded files in development.
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/
+!/tmp/storage/.keep
+
+/public/assets
+.byebug_history
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
+/config/credentials/*.key
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Ruby version managers
+.ruby-version
+.ruby-gemset
+.rvmrc
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Database
+/db/*.sqlite3
+/db/*.sqlite3-journal
+/db/*.sqlite3-*
+
+# Node modules (se usar assets com Node)
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
+
+# Coverage reports
+/coverage/
+
+# Ignore Spring files.
+/spring/*.pid
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Credentials e chaves
+/config/credentials/production.key
+/config/credentials/staging.key
+*.pem
+*.key
+!public.key
+
+# Cache do Bootsnap
+/tmp/cache/bootsnap*
+
+# Sidekiq
+dump.rdb
+
+# Rails 7+
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
+# Ignore any local configuration
+/config/database.yml.local
+/config/secrets.yml.local
+
+# Ignorar arquivos de backup
+*.bak
+*.backup
+
+# Logs específicos
+*.log
+
+# Arquivos temporários
+.sass-cache/
+.tmp/

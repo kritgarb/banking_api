@@ -1,0 +1,408 @@
+{
+	"info": {
+		"_postman_id": "api-bancaria-collection",
+		"name": "API Bancária",
+		"description": "Collection para testar a API Bancária desenvolvida em Ruby on Rails com autenticação JWT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Autenticação",
+			"item": [
+				{
+					"name": "Criar Usuário",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": {\n    \"nome\": \"João Silva\",\n    \"email\": \"joao@example.com\",\n    \"password\": \"senha123\",\n    \"password_confirmation\": \"senha123\",\n    \"cpf\": \"11144477735\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						},
+						"description": "Cria um novo usuário e automaticamente cria uma conta bancária associada"
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    pm.environment.set(\"user_id\", jsonData.user.id);",
+									"    pm.environment.set(\"conta_id\", jsonData.user.conta_bancaria.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"joao@example.com\",\n  \"password\": \"senha123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Realiza login e retorna token JWT. O token é automaticamente salvo na variável de ambiente."
+					}
+				}
+			]
+		},
+		{
+			"name": "Conta Bancária",
+			"item": [
+				{
+					"name": "Consultar Saldo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/conta/saldo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"conta",
+								"saldo"
+							]
+						},
+						"description": "Retorna o saldo atual da conta do usuário autenticado"
+					}
+				},
+				{
+					"name": "Realizar Depósito",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"valor\": 1000.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/conta/deposito",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"conta",
+								"deposito"
+							]
+						},
+						"description": "Realiza um depósito na conta do usuário autenticado"
+					}
+				}
+			]
+		},
+		{
+			"name": "Transferências",
+			"item": [
+				{
+					"name": "Realizar Transferência",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"conta_destino_id\": 2,\n  \"valor\": 100.50,\n  \"descricao\": \"Pagamento\",\n  \"chave_idempotencia\": \"{{$guid}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transferencias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transferencias"
+							]
+						},
+						"description": "Realiza uma transferência PIX instantânea. A chave_idempotencia previne transferências duplicadas."
+					}
+				},
+				{
+					"name": "Agendar Transferência",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"conta_destino_id\": 2,\n  \"valor\": 50.0,\n  \"descricao\": \"Pagamento aluguel\",\n  \"executar_em\": \"2025-07-25T10:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transferencias/agendada",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transferencias",
+								"agendada"
+							]
+						},
+						"description": "Agenda uma transferência para ser executada em data futura. O valor NÃO é debitado no momento do agendamento."
+					}
+				}
+			]
+		},
+		{
+			"name": "Extrato",
+			"item": [
+				{
+					"name": "Consultar Extrato Completo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/extrato",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"extrato"
+							]
+						},
+						"description": "Retorna todas as transações da conta"
+					}
+				},
+				{
+					"name": "Extrato com Filtros",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/extrato?data_inicio=2025-01-01&data_fim=2025-12-31&tipo=todas&valor_minimo=50&page=1&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"extrato"
+							],
+							"query": [
+								{
+									"key": "data_inicio",
+									"value": "2025-01-01",
+									"description": "Data inicial (YYYY-MM-DD)"
+								},
+								{
+									"key": "data_fim",
+									"value": "2025-12-31",
+									"description": "Data final (YYYY-MM-DD)"
+								},
+								{
+									"key": "tipo",
+									"value": "todas",
+									"description": "Tipo: todas, enviadas ou recebidas"
+								},
+								{
+									"key": "valor_minimo",
+									"value": "50",
+									"description": "Valor mínimo das transações"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Página atual"
+								},
+								{
+									"key": "per_page",
+									"value": "20",
+									"description": "Itens por página"
+								}
+							]
+						},
+						"description": "Retorna o extrato com filtros aplicados e paginação"
+					}
+				},
+				{
+					"name": "Extrato - Apenas Enviadas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/extrato?tipo=enviadas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"extrato"
+							],
+							"query": [
+								{
+									"key": "tipo",
+									"value": "enviadas"
+								}
+							]
+						},
+						"description": "Retorna apenas as transferências enviadas"
+					}
+				},
+				{
+					"name": "Extrato - Apenas Recebidas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/extrato?tipo=recebidas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"extrato"
+							],
+							"query": [
+								{
+									"key": "tipo",
+									"value": "recebidas"
+								}
+							]
+						},
+						"description": "Retorna apenas as transferências recebidas"
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "conta_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
